@@ -1,68 +1,241 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* Sleek Modern Palette */
+  --neon-cyan: #00f3ff;
+  --neon-magenta: #da00ff;
+  --neon-purple: #9d00ff;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  --bg-dark: #050505;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --bg-pure-black: #000000;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --text-main: #ffffff;
+  --text-dim: #888888;
+  --border-color: rgba(255, 255, 255, 0.1);
+
+  /* Light Theme High Contrast */
+  --bg-light: #f0f2f5;
+  --text-light: #1a1a1a;
+  --border-light: #ccc;
+
+  /* Defaults */
+  --bg-color: var(--bg-light);
+  --text-color: var(--text-light);
+  --border-color: var(--border-light);
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+* {
+  box-sizing: border-box;
 }
-a:hover {
-  color: #535bf2;
+
+[data-theme="neon-dark"] {
+  --bg-color: var(--bg-dark);
+  --text-color: var(--text-main);
+  --border-color: rgba(0, 243, 255, 0.2);
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* Typography & Utilities */
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+.neon-text {
+  /* Subtle glow, clean text */
+  text-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+}
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 2rem;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+[data-theme="neon-dark"] .card.bg-pure-black {
+  background: var(--bg-pure-black);
+  border: 1px solid rgba(218, 0, 255, 0.3);
+}
+
+[data-theme="neon-dark"] .card {
+  backdrop-filter: blur(20px);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.card:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 20px 40px -10px rgba(0, 243, 255, 0.15);
+  border-color: var(--neon-cyan);
+}
+
+/* Inputs */
+.neon-input {
+  background: rgba(255, 255, 255, 0.03);
+  /* Default for dark */
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  color: var(--text-color);
+  /* Adapts to theme */
+  width: 100%;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.neon-input:focus {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 243, 255, 0.05);
+  box-shadow: 0 0 0 4px rgba(0, 243, 255, 0.1);
+}
+
+/* Light mode override for input background visibility */
+:root:not([data-theme="neon-dark"]) .neon-input {
+  background: #ffffff;
+  border-color: #ccc;
+  color: #000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Buttons */
+.neon-button {
+  background: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  padding: 0.8rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+[data-theme="neon-dark"] .neon-button {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+.neon-button:hover {
+  background: var(--neon-cyan);
+  color: #000;
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.neon-button.secondary {
+  border-color: var(--neon-magenta);
+  color: var(--neon-magenta);
+}
+
+.neon-button.secondary:hover {
+  background: var(--neon-magenta);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(218, 0, 255, 0.4);
+}
+
+:root:not([data-theme="neon-dark"]) .neon-button {
+  font-weight: 700;
+  border-color: #333;
+  color: #333;
+}
+
+:root:not([data-theme="neon-dark"]) .neon-button:hover {
+  background: #333;
+  color: #fff;
+}
+
+/* Light mode: headings and neon-text must be visible */
+:root:not([data-theme="neon-dark"]) h1,
+:root:not([data-theme="neon-dark"]) h2,
+:root:not([data-theme="neon-dark"]) h3 {
+  color: #1a1a1a;
+  text-shadow: none;
+}
+
+:root:not([data-theme="neon-dark"]) .neon-text {
+  color: #1a1a1a;
+  text-shadow: none;
+}
+
+:root:not([data-theme="neon-dark"]) .card {
+  background: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Custom Checkbox & Radio */
+input[type="checkbox"],
+input[type="radio"] {
+  appearance: none;
+  background-color: transparent;
+  margin: 0;
+  font: inherit;
+  color: currentColor;
+  width: 1.2em;
+  height: 1.2em;
+  border: 1px solid var(--text-dim);
+  border-radius: 0.15em;
+  display: grid;
+  place-content: center;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+input[type="radio"] {
+  border-radius: 50%;
+}
+
+input[type="checkbox"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em var(--bg-dark);
+  /* Checkmark color (inverse of bg) */
+  transform-origin: center;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  background-color: #000;
+}
+
+input[type="radio"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em #000;
+}
+
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+  background-color: var(--neon-cyan);
+  border-color: var(--neon-cyan);
+}
+
+input[type="checkbox"]:checked::before,
+input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+
+/* Layout */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
 }

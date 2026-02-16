@@ -1,25 +1,24 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const dotenv = require('dotenv').config();
+const { errorHandler } = require('./middleware/errorMiddleware');
+const connectDB = require('./config/db');
+const PORT = process.env.PORT || 5000;
 const cors = require('cors');
+
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
-// Example route
-app.get('/', (req, res) => {
-  res.send('MERN backend running');
-});
+// Connect to database
+connectDB();
 
-// MongoDB connection placeholder
-mongoose.connect('mongodb://localhost:27017/mern-assn1', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB connected'))
-.catch((err) => console.error('MongoDB connection error:', err));
+// Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/events', require('./routes/eventRoutes'));
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Error Handler
+app.use(errorHandler);
+
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
