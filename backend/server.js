@@ -22,3 +22,11 @@ app.use('/api/events', require('./routes/eventRoutes'));
 app.use(errorHandler);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+// Allow both your local environment and your production Vercel URL
+app.use(cors({
+    origin: [
+        'http://localhost:5173', 
+        'https://your-app-name.vercel.app' // Replace with your actual Vercel URL
+    ],
+    credentials: true
+}));
