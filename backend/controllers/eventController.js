@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const Event = require('../models/Event');
 const Registration = require('../models/Registration');
 const User = require('../models/User');
+const { sendEmail } = require('../utils/email');
 
 // @desc    Get organizer's own events
 const getMyEvents = asyncHandler(async (req, res) => {
@@ -168,6 +169,23 @@ const registerForEvent = asyncHandler(async (req, res) => {
             await event.save();
         }
 
+        // Send confirmation email to participant
+        try {
+            const participant = await User.findById(req.user._id);
+            await sendEmail(
+                participant.email,
+                `Registration Submitted — ${event.title}`,
+                `<h2>Hi ${participant.firstName || participant.name || ''}!</h2>
+                <p>Your registration for <strong>${event.title}</strong> has been submitted and is <strong>pending organizer approval</strong>.</p>
+                <p><strong>Event Date:</strong> ${new Date(event.startDate).toLocaleDateString()}</p>
+                <p><strong>Venue:</strong> ${event.venue}</p>
+                <p>You will be notified once your registration is approved.</p>
+                <br><p>— Felicity 2026 Team</p>`
+            );
+        } catch (emailErr) {
+            console.error('Failed to send registration email:', emailErr.message);
+        }
+
         res.status(200).json({ message: 'Registration submitted! Awaiting organizer approval.', pending: true });
     } else {
         // No custom form: auto-approve
@@ -181,6 +199,25 @@ const registerForEvent = asyncHandler(async (req, res) => {
         }
         event.registrations.push(req.user._id);
         await event.save();
+
+        // Send confirmation email to participant
+        try {
+            const participant = await User.findById(req.user._id);
+            await sendEmail(
+                participant.email,
+                `Registration Confirmed — ${event.title}`,
+                `<h2>Hi ${participant.firstName || participant.name || ''}!</h2>
+                <p>You have been successfully registered for <strong>${event.title}</strong>!</p>
+                <p><strong>Event Date:</strong> ${new Date(event.startDate).toLocaleDateString()}</p>
+                <p><strong>Venue:</strong> ${event.venue}</p>
+                ${event.registrationFee > 0 ? `<p><strong>Fee:</strong> ₹${event.registrationFee}</p>` : ''}
+                <p>See you there! 🎉</p>
+                <br><p>— Felicity 2026 Team</p>`
+            );
+        } catch (emailErr) {
+            console.error('Failed to send registration email:', emailErr.message);
+        }
+
         res.status(200).json({ message: 'Registered successfully', event });
     }
 });
@@ -324,9 +361,40 @@ const publishEvent = asyncHandler(async (req, res) => {
     res.status(200).json({ message: 'Event published successfully', event });
 });
 
+// @desc    Organizer: send email to all registered participants of an event
+const sendEmailToParticipants = asyncHandler(async (req, res) => {
+    const event = await Event.findById(req.params.id)
+        .populate('registrations', 'email firstName lastName name');
+    if (!event) { res.status(404); throw new Error('Event not found'); }
+    if (event.organizer.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+        res.status(401); throw new Error('Not authorized');
+    }
+
+    const { subject, message } = req.body;
+    if (!subject || !message) { res.status(400); throw new Error('Subject and message are required'); }
+
+    const participants = event.registrations || [];
+    if (participants.length === 0) { res.status(400); throw new Error('No registered participants to email'); }
+
+    let sent = 0;
+    let failed = 0;
+    for (const participant of participants) {
+        try {
+            await sendEmail(participant.email, subject, message);
+            sent++;
+        } catch (err) {
+            console.error(`Failed to send email to ${participant.email}:`, err.message);
+            failed++;
+        }
+    }
+
+    res.status(200).json({ message: `Emails sent: ${sent} successful, ${failed} failed`, sent, failed });
+});
+
 module.exports = {
     getMyEvents, getAllEvents, getAdminEvents, getEventDetail, getEventRegistrations, markAttendance,
     createEvent, registerForEvent, updateEventForm,
     getTrendingEvents, getMyRegisteredEvents, getFollowedEvents, getParticipationHistory,
     updateEvent, deleteEvent, publishEvent, approveRegistration, rejectRegistration,
+    sendEmailToParticipants,
 };

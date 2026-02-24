@@ -5,6 +5,7 @@ const {
     createEvent, registerForEvent, updateEventForm,
     getTrendingEvents, getMyRegisteredEvents, getFollowedEvents, getParticipationHistory,
     updateEvent, deleteEvent, publishEvent, approveRegistration, rejectRegistration,
+    sendEmailToParticipants,
 } = require('../controllers/eventController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -22,6 +23,7 @@ router.route('/:id/registrations').get(protect, getEventRegistrations);
 router.route('/:id/publish').put(protect, publishEvent);
 router.route('/:eventId/registrations/:regId/approve').put(protect, approveRegistration);
 router.route('/:eventId/registrations/:regId/reject').put(protect, rejectRegistration);
+router.route('/:id/send-email').post(protect, sendEmailToParticipants);
 router.route('/:id').get(protect, getEventDetail).put(protect, updateEvent).delete(protect, deleteEvent);
 
 module.exports = router;

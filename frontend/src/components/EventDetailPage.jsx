@@ -14,6 +14,11 @@ const EventDetailPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
     const [showFormBuilder, setShowFormBuilder] = useState(false);
+    const [showEmailPanel, setShowEmailPanel] = useState(false);
+    const [emailSubject, setEmailSubject] = useState('');
+    const [emailMessage, setEmailMessage] = useState('');
+    const [emailStatus, setEmailStatus] = useState('');
+    const [emailSending, setEmailSending] = useState(false);
 
     useEffect(() => { fetchEvent(); }, [id]);
 
@@ -150,6 +155,44 @@ const EventDetailPage = () => {
                             fetchEvent();
                         }}
                     />
+                )}
+            </div>
+
+            {/* Email Participants */}
+            <div style={{ marginTop: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                    <h3 style={{ margin: 0, fontSize: '1rem' }}>✉ Email Participants</h3>
+                    <NeonButton onClick={() => { setShowEmailPanel(!showEmailPanel); setEmailStatus(''); }} style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem' }}>
+                        {showEmailPanel ? 'Hide' : 'Compose'}
+                    </NeonButton>
+                </div>
+                {showEmailPanel && (
+                    <div style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '12px', background: 'rgba(255,255,255,0.02)', display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
+                        <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-dim)' }}>Sending to <strong style={{ color: 'var(--neon-cyan)' }}>{regs.length}</strong> registered participant(s)</p>
+                        <NeonInput placeholder="Subject *" value={emailSubject} onChange={e => setEmailSubject(e.target.value)} />
+                        <textarea placeholder="Message (supports HTML) *" value={emailMessage} onChange={e => setEmailMessage(e.target.value)}
+                            style={{
+                                width: '100%', minHeight: '100px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)',
+                                borderRadius: '12px', padding: '0.8rem', color: 'var(--text-color)', fontSize: '0.85rem',
+                                outline: 'none', resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box',
+                            }} />
+                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                            <NeonButton disabled={emailSending || regs.length === 0} onClick={async () => {
+                                if (!emailSubject.trim() || !emailMessage.trim()) { setEmailStatus('Subject and message are required.'); return; }
+                                setEmailSending(true); setEmailStatus('Sending...');
+                                try {
+                                    const token = localStorage.getItem('token');
+                                    const res = await axios.post(`${API_URL}/api/events/${id}/send-email`, { subject: emailSubject, message: emailMessage }, { headers: { Authorization: `Bearer ${token}` } });
+                                    setEmailStatus(`✅ ${res.data.message}`);
+                                    setEmailSubject(''); setEmailMessage('');
+                                } catch (err) { setEmailStatus(`❌ ${err.response?.data?.message || 'Failed to send'}`); }
+                                finally { setEmailSending(false); }
+                            }} style={{ fontSize: '0.82rem', padding: '0.4rem 1rem' }}>
+                                {emailSending ? 'Sending...' : '📤 Send Email'}
+                            </NeonButton>
+                            {emailStatus && <span style={{ fontSize: '0.8rem', color: emailStatus.startsWith('✅') ? 'var(--neon-cyan)' : emailStatus === 'Sending...' ? 'var(--text-dim)' : 'var(--neon-magenta)' }}>{emailStatus}</span>}
+                        </div>
+                    </div>
                 )}
             </div>
 

@@ -1,0 +1,3 @@
+https://felicity-mern.vercel.app/
+ADMIN_EMAIL=admin@felicity.iiit.ac.in
+ADMIN_PASSWORD=password
