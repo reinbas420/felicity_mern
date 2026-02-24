@@ -20,11 +20,17 @@ app.use(cors({
         if (!origin) return callback(null, true);
 
         const cleanOrigin = origin.replace(/\/$/, "");
-        if (allowedOrigins.indexOf(cleanOrigin) !== -1 || allowedOrigins.includes('*')) {
+
+        // Match specific origins OR any vercel.app subdomain
+        if (
+            allowedOrigins.indexOf(cleanOrigin) !== -1 ||
+            cleanOrigin.endsWith('.vercel.app') ||
+            allowedOrigins.includes('*')
+        ) {
             callback(null, true);
         } else {
             console.log("CORS blocked for origin:", origin);
-            console.log("Allowed origins are:", allowedOrigins);
+            console.log("Allowed origins represent:", allowedOrigins);
             callback(new Error('Not allowed by CORS'));
         }
     },
