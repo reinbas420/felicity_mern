@@ -3,6 +3,7 @@ import { NeonCard, NeonButton } from './ui/NeonComponents';
 import AuthContext from '../context/AuthContext';
 import { Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../api_config';
 
 const ClubsPage = () => {
     const { user, setUser } = useContext(AuthContext);
@@ -16,7 +17,7 @@ const ClubsPage = () => {
     const fetchOrganizers = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/auth/organizers', {
+            const res = await axios.get(`${API_URL}/api/auth/organizers`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setOrganizers(res.data);
@@ -27,7 +28,7 @@ const ClubsPage = () => {
     const handleFollow = async (orgId) => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post(`http://localhost:5000/api/auth/follow/${orgId}`, {}, {
+            const res = await axios.post(`${API_URL}/api/auth/follow/${orgId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUser(prev => ({ ...prev, followedOrganizers: res.data.followedOrganizers }));

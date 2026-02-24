@@ -3,6 +3,7 @@ import { NeonCard, NeonButton, NeonInput } from './ui/NeonComponents';
 import AuthContext from '../context/AuthContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../api_config';
 
 const OrganizerProfilePage = () => {
     const { user, setUser } = useContext(AuthContext);
@@ -29,7 +30,7 @@ const OrganizerProfilePage = () => {
     const handleSave = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.put('http://localhost:5000/api/auth/profile', formData, {
+            const res = await axios.put(`${API_URL}/api/auth/profile`, formData, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert('Profile updated!');
@@ -43,7 +44,7 @@ const OrganizerProfilePage = () => {
         if (!resetReason.trim()) { setResetMsg('Please provide a reason for the password change'); return; }
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post('http://localhost:5000/api/auth/organizer/request-password-reset',
+            const res = await axios.post(`${API_URL}/api/auth/organizer/request-password-reset`,
                 { newPassword: resetPassword, reason: resetReason.trim() },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

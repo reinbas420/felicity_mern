@@ -4,6 +4,7 @@ import AuthContext from '../../context/AuthContext';
 import FormBuilder from '../FormBuilder';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../../api_config';
 
 const GENRE_OPTIONS = ['tech', 'cultural', 'sports', 'academic', 'social', 'other'];
 const STATUS_OPTIONS = ['draft', 'published'];
@@ -30,7 +31,7 @@ const OrganizerDashboard = () => {
     const fetchEvents = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/events/my-events', {
+            const res = await axios.get(`${API_URL}/api/events/my-events`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setEvents(res.data);
@@ -47,7 +48,7 @@ const OrganizerDashboard = () => {
                 merchandiseItems: newEvent.eventType === 'merchandise' ? newEvent.merchandiseItems : [],
                 customFormFields: customFormFields,
             };
-            await axios.post('http://localhost:5000/api/events', payload, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.post(`${API_URL}/api/events`, payload, { headers: { Authorization: `Bearer ${token}` } });
             setShowModal(false);
             setNewEvent({ title: '', description: '', startDate: '', endDate: '', venue: '', genre: 'other', capacity: 100, eventType: 'normal', eligibility: 'all', registrationDeadline: '', registrationFee: 0, tags: '', status: 'published', merchandiseItems: [] });
             setCustomFormFields([]);
@@ -60,7 +61,7 @@ const OrganizerDashboard = () => {
         if (!window.confirm('Delete this event?')) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:5000/api/events/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.delete(`${API_URL}/api/events/${id}`, { headers: { Authorization: `Bearer ${token}` } });
             fetchEvents();
         } catch (error) { alert(error.response?.data?.message || 'Error deleting'); }
     };
@@ -69,7 +70,7 @@ const OrganizerDashboard = () => {
         if (!window.confirm('Publish this event? It will become visible to all participants.')) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`http://localhost:5000/api/events/${id}/publish`, {}, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.put(`${API_URL}/api/events/${id}/publish`, {}, { headers: { Authorization: `Bearer ${token}` } });
             fetchEvents();
         } catch (error) { alert(error.response?.data?.message || 'Error publishing'); }
     };
@@ -80,7 +81,7 @@ const OrganizerDashboard = () => {
             const allPending = [];
             for (const event of events) {
                 if (event.customFormFields && event.customFormFields.length > 0) {
-                    const res = await axios.get(`http://localhost:5000/api/events/${event._id}/registrations`, {
+                    const res = await axios.get(`${API_URL}/api/events/${event._id}/registrations`, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                     const pending = res.data.filter(r => r.status === 'pending');
@@ -96,7 +97,7 @@ const OrganizerDashboard = () => {
     const handleApproveReg = async (eventId, regId) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`http://localhost:5000/api/events/${eventId}/registrations/${regId}/approve`, {}, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.put(`${API_URL}/api/events/${eventId}/registrations/${regId}/approve`, {}, { headers: { Authorization: `Bearer ${token}` } });
             fetchEvents();
         } catch (err) { alert(err.response?.data?.message || 'Error approving'); }
     };
@@ -105,7 +106,7 @@ const OrganizerDashboard = () => {
         if (!window.confirm('Reject this registration?')) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.put(`http://localhost:5000/api/events/${eventId}/registrations/${regId}/reject`, {}, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.put(`${API_URL}/api/events/${eventId}/registrations/${regId}/reject`, {}, { headers: { Authorization: `Bearer ${token}` } });
             fetchEvents();
         } catch (err) { alert(err.response?.data?.message || 'Error rejecting'); }
     };

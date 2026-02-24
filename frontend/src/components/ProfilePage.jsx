@@ -3,6 +3,7 @@ import { NeonCard, NeonButton, NeonInput } from './ui/NeonComponents';
 import AuthContext from '../context/AuthContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../api_config';
 
 const GENRE_OPTIONS = ['tech', 'cultural', 'sports', 'academic', 'social'];
 
@@ -32,7 +33,7 @@ const ProfilePage = () => {
     const fetchOrganizers = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/auth/organizers', { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.get(`${API_URL}/api/auth/organizers`, { headers: { Authorization: `Bearer ${token}` } });
             setOrganizers(res.data);
         } catch (err) { console.error(err); }
     };
@@ -47,7 +48,7 @@ const ProfilePage = () => {
     const handleFollow = async (orgId) => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post(`http://localhost:5000/api/auth/follow/${orgId}`, {}, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.post(`${API_URL}/api/auth/follow/${orgId}`, {}, { headers: { Authorization: `Bearer ${token}` } });
             setUser(prev => ({ ...prev, followedOrganizers: res.data.followedOrganizers }));
         } catch (err) { alert(err.response?.data?.message || 'Error'); }
     };
@@ -57,7 +58,7 @@ const ProfilePage = () => {
             const token = localStorage.getItem('token');
             const payload = { ...formData };
             if (!payload.password) delete payload.password;
-            const res = await axios.put('http://localhost:5000/api/auth/profile', payload, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.put(`${API_URL}/api/auth/profile`, payload, { headers: { Authorization: `Bearer ${token}` } });
             alert('Profile updated!');
             setUser({ ...user, ...res.data });
             navigate('/dashboard');

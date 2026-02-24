@@ -4,6 +4,7 @@ import { NeonCard, NeonButton, NeonInput } from './ui/NeonComponents';
 import AuthContext from '../context/AuthContext';
 import FormBuilder from './FormBuilder';
 import axios from 'axios';
+import { API_URL } from '../api_config';
 
 const EventDetailPage = () => {
     const { id } = useParams();
@@ -19,7 +20,7 @@ const EventDetailPage = () => {
     const fetchEvent = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get(`http://localhost:5000/api/events/${id}`, {
+            const res = await axios.get(`${API_URL}/api/events/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setEvent(res.data);
@@ -30,7 +31,7 @@ const EventDetailPage = () => {
     const markAttendance = async (userId) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.post(`http://localhost:5000/api/events/${id}/attendance`, { userId }, {
+            await axios.post(`${API_URL}/api/events/${id}/attendance`, { userId }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchEvent();
@@ -144,7 +145,7 @@ const EventDetailPage = () => {
                         formLocked={event.formLocked || false}
                         onSave={async (fields) => {
                             const token = localStorage.getItem('token');
-                            const res = await axios.put(`http://localhost:5000/api/events/${id}/form`, { customFormFields: fields }, { headers: { Authorization: `Bearer ${token}` } });
+                            const res = await axios.put(`${API_URL}/api/events/${id}/form`, { customFormFields: fields }, { headers: { Authorization: `Bearer ${token}` } });
                             alert(res.data.message || 'Form saved');
                             fetchEvent();
                         }}

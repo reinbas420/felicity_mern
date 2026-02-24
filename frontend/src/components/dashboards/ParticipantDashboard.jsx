@@ -4,6 +4,7 @@ import AuthContext from '../../context/AuthContext';
 import { FelicityLogo } from '../../layouts/MainLayout';
 import EventDetailModal from '../EventDetailModal';
 import axios from 'axios';
+import { API_URL } from '../../api_config';
 
 const ParticipantDashboard = () => {
     const { user } = useContext(AuthContext);
@@ -23,10 +24,10 @@ const ParticipantDashboard = () => {
         const headers = { Authorization: `Bearer ${token}` };
         try {
             const [t, r, f, h] = await Promise.all([
-                axios.get('http://localhost:5000/api/events/trending', { headers }),
-                axios.get('http://localhost:5000/api/events/my-registered', { headers }),
-                axios.get('http://localhost:5000/api/events/followed', { headers }),
-                axios.get('http://localhost:5000/api/events/history', { headers }),
+                axios.get(`${API_URL}/api/events/trending`, { headers }),
+                axios.get(`${API_URL}/api/events/my-registered`, { headers }),
+                axios.get(`${API_URL}/api/events/followed`, { headers }),
+                axios.get(`${API_URL}/api/events/history`, { headers }),
             ]);
             setTrending(t.data); setRegistered(r.data); setFollowed(f.data); setHistory(h.data);
         } catch (err) { console.error(err); }
@@ -36,7 +37,7 @@ const ParticipantDashboard = () => {
     const handleRegister = async (eventId, formResponses = []) => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post(`http://localhost:5000/api/events/${eventId}/register`, { formResponses }, {
+            const res = await axios.post(`${API_URL}/api/events/${eventId}/register`, { formResponses }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.pending) {

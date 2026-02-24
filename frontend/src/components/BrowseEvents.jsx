@@ -3,6 +3,7 @@ import { NeonCard, NeonButton, NeonInput } from './ui/NeonComponents';
 import AuthContext from '../context/AuthContext';
 import EventDetailModal from './EventDetailModal';
 import axios from 'axios';
+import { API_URL } from '../api_config';
 
 const GENRE_OPTIONS = ['all', 'tech', 'cultural', 'sports', 'academic', 'social', 'other'];
 const TIME_OPTIONS = ['all', 'upcoming', 'past'];
@@ -23,7 +24,7 @@ const BrowseEvents = () => {
     const fetchOrganizers = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/auth/organizers', { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.get(`${API_URL}/api/auth/organizers`, { headers: { Authorization: `Bearer ${token}` } });
             setOrganizers(res.data);
         } catch (err) { console.error(err); }
     };
@@ -37,7 +38,7 @@ const BrowseEvents = () => {
             if (timeFilter !== 'all') params.append('timeFilter', timeFilter);
             if (search) params.append('search', search);
             if (organizerFilter) params.append('organizer', organizerFilter);
-            const res = await axios.get(`http://localhost:5000/api/events?${params.toString()}`, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.get(`${API_URL}/api/events?${params.toString()}`, { headers: { Authorization: `Bearer ${token}` } });
             setEvents(res.data);
         } catch (err) { console.error(err); }
         finally { setLoading(false); }
@@ -48,7 +49,7 @@ const BrowseEvents = () => {
     const handleRegister = async (eventId, formResponses = []) => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post(`http://localhost:5000/api/events/${eventId}/register`, { formResponses }, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.post(`${API_URL}/api/events/${eventId}/register`, { formResponses }, { headers: { Authorization: `Bearer ${token}` } });
             alert(res.data.pending ? '⏳ Registration submitted! Awaiting organizer approval.' : '✓ Registered!');
             fetchEvents();
         } catch (err) { alert(err.response?.data?.message || 'Failed'); }

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { NeonCard, NeonButton } from './ui/NeonComponents';
 import AuthContext from '../context/AuthContext';
 import axios from 'axios';
+import { API_URL } from '../api_config';
 
 const ClubDetailPage = () => {
     const { id } = useParams();
@@ -20,14 +21,14 @@ const ClubDetailPage = () => {
             const headers = { Authorization: `Bearer ${token}` };
 
             // Get all organizers, find this one
-            const orgRes = await axios.get('http://localhost:5000/api/auth/organizers', { headers });
+            const orgRes = await axios.get(`${API_URL}/api/auth/organizers`, { headers });
             const found = orgRes.data.find(o => o._id === id);
             setClub(found);
 
             // Get events from this organizer
-            const upRes = await axios.get(`http://localhost:5000/api/events?organizer=${id}&timeFilter=upcoming`, { headers });
+            const upRes = await axios.get(`${API_URL}/api/events?organizer=${id}&timeFilter=upcoming`, { headers });
             setUpcoming(upRes.data);
-            const pastRes = await axios.get(`http://localhost:5000/api/events?organizer=${id}&timeFilter=past`, { headers });
+            const pastRes = await axios.get(`${API_URL}/api/events?organizer=${id}&timeFilter=past`, { headers });
             setPast(pastRes.data);
         } catch (err) { console.error(err); }
         finally { setLoading(false); }
@@ -36,7 +37,7 @@ const ClubDetailPage = () => {
     const handleFollow = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post(`http://localhost:5000/api/auth/follow/${id}`, {}, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.post(`${API_URL}/api/auth/follow/${id}`, {}, { headers: { Authorization: `Bearer ${token}` } });
             setUser(prev => ({ ...prev, followedOrganizers: res.data.followedOrganizers }));
         } catch (err) { alert(err.response?.data?.message || 'Error'); }
     };
@@ -44,7 +45,7 @@ const ClubDetailPage = () => {
     const handleRegister = async (eventId) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.post(`http://localhost:5000/api/events/${eventId}/register`, {}, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.post(`${API_URL}/api/events/${eventId}/register`, {}, { headers: { Authorization: `Bearer ${token}` } });
             alert('Registered!');
             fetchClub();
         } catch (err) { alert(err.response?.data?.message || 'Failed'); }

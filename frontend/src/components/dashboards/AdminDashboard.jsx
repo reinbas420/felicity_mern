@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { NeonCard, NeonButton, NeonInput } from '../ui/NeonComponents';
 import axios from 'axios';
+import { API_URL } from '../../api_config';
 
 const AdminDashboard = () => {
     const [upcoming, setUpcoming] = useState([]);
@@ -47,9 +48,9 @@ const AdminDashboard = () => {
     const fetchAll = async () => {
         try {
             const [evRes, orgRes, resetRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/events/admin/all', { headers }),
-                axios.get('http://localhost:5000/api/auth/organizers', { headers }),
-                axios.get('http://localhost:5000/api/auth/admin/pending-resets', { headers }).catch(() => ({ data: [] })),
+                axios.get(`${API_URL}/api/events/admin/all`, { headers }),
+                axios.get(`${API_URL}/api/auth/organizers`, { headers }),
+                axios.get(`${API_URL}/api/auth/admin/pending-resets`, { headers }).catch(() => ({ data: [] })),
             ]);
             setUpcoming(evRes.data.upcoming || []);
             setPast(evRes.data.past || []);
@@ -68,7 +69,7 @@ const AdminDashboard = () => {
         if (!query.trim()) { setSearchResults([]); setShowDropdown(false); return; }
         searchTimeout.current = setTimeout(async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/auth/admin/search-participants?q=${encodeURIComponent(query)}`, { headers });
+                const res = await axios.get(`${API_URL}/api/auth/admin/search-participants?q=${encodeURIComponent(query)}`, { headers });
                 setSearchResults(res.data);
                 setShowDropdown(res.data.length > 0);
             } catch (err) { console.error(err); setSearchResults([]); }
@@ -85,7 +86,7 @@ const AdminDashboard = () => {
     const handleCreateOrganizer = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5000/api/auth/create-organizer', orgForm, { headers });
+            await axios.post(`${API_URL}/api/auth/create-organizer`, orgForm, { headers });
             setOrgForm({ organizerName: '', email: '', password: '', category: '', description: '', contactEmail: '' });
             setShowCreateOrg(false);
             fetchAll();
@@ -95,7 +96,7 @@ const AdminDashboard = () => {
     const handleDeleteOrganizer = async (id, name) => {
         if (!window.confirm(`Delete organizer "${name}" and ALL their events?`)) return;
         try {
-            await axios.delete(`http://localhost:5000/api/auth/organizer/${id}`, { headers });
+            await axios.delete(`${API_URL}/api/auth/organizer/${id}`, { headers });
             fetchAll();
         } catch (err) { alert(err.response?.data?.message || 'Failed to delete'); }
     };
@@ -104,7 +105,7 @@ const AdminDashboard = () => {
         e.preventDefault();
         setEmailStatus('Sending...');
         try {
-            await axios.post('http://localhost:5000/api/auth/admin/send-email',
+            await axios.post(`${API_URL}/api/auth/admin/send-email`,
                 { to: emailTo, subject: emailSubject, message: emailMessage }, { headers });
             setEmailStatus('Email sent successfully!');
             setEmailTo(''); setEmailSubject(''); setEmailMessage('');
@@ -115,7 +116,7 @@ const AdminDashboard = () => {
     const handleDeleteEvent = async (id, title) => {
         if (!window.confirm(`Delete event "${title}" and all its registrations?`)) return;
         try {
-            await axios.delete(`http://localhost:5000/api/events/${id}`, { headers });
+            await axios.delete(`${API_URL}/api/events/${id}`, { headers });
             fetchAll();
         } catch (err) { alert(err.response?.data?.message || 'Failed to delete event'); }
     };
@@ -229,8 +230,8 @@ const AdminDashboard = () => {
                                         {pr.passwordResetReason && <p style={{ margin: '0.25rem 0 0', fontSize: '0.78rem', color: '#f59e0b', fontStyle: 'italic' }}>Reason: "{pr.passwordResetReason}"</p>}
                                     </div>
                                     <div style={{ display: 'flex', gap: '0.3rem' }}>
-                                        <button onClick={async () => { await axios.post(`http://localhost:5000/api/auth/admin/approve-reset/${pr._id}`, {}, { headers }); fetchAll(); }} style={{ background: 'var(--neon-cyan)', color: '#000', border: 'none', padding: '0.25rem 0.5rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '700' }}>Approve</button>
-                                        <button onClick={async () => { await axios.post(`http://localhost:5000/api/auth/admin/reject-reset/${pr._id}`, {}, { headers }); fetchAll(); }} style={{ background: 'transparent', color: 'var(--neon-magenta)', border: '1px solid var(--neon-magenta)', padding: '0.25rem 0.5rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '700' }}>Reject</button>
+                                        <button onClick={async () => { await axios.post(`${API_URL}/api/auth/admin/approve-reset/${pr._id}`, {}, { headers }); fetchAll(); }} style={{ background: 'var(--neon-cyan)', color: '#000', border: 'none', padding: '0.25rem 0.5rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '700' }}>Approve</button>
+                                        <button onClick={async () => { await axios.post(`${API_URL}/api/auth/admin/reject-reset/${pr._id}`, {}, { headers }); fetchAll(); }} style={{ background: 'transparent', color: 'var(--neon-magenta)', border: '1px solid var(--neon-magenta)', padding: '0.25rem 0.5rem', borderRadius: '8px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: '700' }}>Reject</button>
                                     </div>
                                 </div>
                             ))}

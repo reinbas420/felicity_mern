@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { NeonCard, NeonInput, NeonButton } from './ui/NeonComponents';
 import axios from 'axios';
+import { API_URL } from '../api_config';
 
 const ForgotPassword = () => {
     const [step, setStep] = useState(1); // 1=email, 2=otp, 3=new password
@@ -17,7 +18,7 @@ const ForgotPassword = () => {
         e.preventDefault();
         setError(''); setLoading(true);
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/forgot-password', { email });
+            const res = await axios.post(`${API_URL}/api/auth/forgot-password`, { email });
             setMessage(res.data.message);
             setStep(2);
         } catch (err) {
@@ -29,7 +30,7 @@ const ForgotPassword = () => {
         e.preventDefault();
         setError(''); setLoading(true);
         try {
-            await axios.post('http://localhost:5000/api/auth/verify-otp', { email, otp });
+            await axios.post(`${API_URL}/api/auth/verify-otp`, { email, otp });
             setMessage('OTP verified! Enter your new password.');
             setStep(3);
         } catch (err) {
@@ -41,7 +42,7 @@ const ForgotPassword = () => {
         e.preventDefault();
         setError(''); setLoading(true);
         try {
-            await axios.post('http://localhost:5000/api/auth/reset-password', { email, otp, newPassword });
+            await axios.post(`${API_URL}/api/auth/reset-password`, { email, otp, newPassword });
             setMessage('Password reset successful! Redirecting to login...');
             setTimeout(() => navigate('/login'), 2000);
         } catch (err) {
