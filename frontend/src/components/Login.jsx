@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import { NeonCard, NeonInput, NeonButton } from './ui/NeonComponents';
 
@@ -9,71 +9,53 @@ const Login = () => {
   const { login, user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [error, setError] = useState('');
-
   const [role, setRole] = useState('participant');
 
-  // Redirect if already logged in
   React.useEffect(() => {
-    if (user) {
-      navigate('/dashboard');
-    }
+    if (user) navigate('/dashboard');
   }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     try {
-      // Backend doesn't strictly need role for login (it infers from DB), but we can pass it if we want to enforce client-side checks or just for UI.
-      // For now, we just authenticate.
       const data = await login(email, password);
-
-      // Optional: Check if logged in user role matches selected role
       if (data.role !== role) {
-        alert(`Warning: You logged in as ${data.role}, but selected ${role}. Redirecting to your actual dashboard.`);
+        alert(`Note: You are logged in as ${data.role}. Redirecting to your dashboard.`);
       }
-
       navigate('/dashboard');
     } catch (err) {
-      alert(err.response?.data?.message || 'Login failed');
-      // setError(err.response?.data?.message || 'Login failed'); // Removed per user request
+      setError(err.response?.data?.message || 'Login failed');
     }
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', padding: '2rem' }}>
       <NeonCard title="Login" style={{ width: '100%', maxWidth: '400px' }}>
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {error && <p style={{ color: 'var(--neon-magenta)', textAlign: 'center', marginBottom: '1rem' }}>{error}</p>}
 
-          <div style={{ display: 'flex', justifyContent: 'space-around', marginBottom: '1rem' }}>
-            {['participant', 'organizer', 'admin'].map((r) => (
-              <label key={r} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', color: role === r ? 'var(--neon-cyan)' : 'var(--text-dim)' }}>
-                <input
-                  type="radio"
-                  name="role"
-                  value={r}
-                  checked={role === r}
-                  onChange={(e) => setRole(e.target.value)}
-                  style={{ accentColor: 'var(--neon-cyan)', marginBottom: '0.5rem' }}
-                />
-                <span style={{ textTransform: 'capitalize', fontSize: '0.8rem' }}>{r}</span>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-around', marginBottom: '0.5rem' }}>
+            {['participant', 'organizer', 'admin'].map(r => (
+              <label key={r} style={{
+                display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer',
+                color: role === r ? 'var(--neon-cyan)' : 'var(--text-dim)',
+              }}>
+                <input type="checkbox" checked={role === r} onChange={() => setRole(r)}
+                  style={{ accentColor: 'var(--neon-cyan)' }} />
+                <span style={{ textTransform: 'capitalize', fontSize: '0.85rem', fontWeight: role === r ? '700' : '400' }}>{r}</span>
               </label>
             ))}
           </div>
 
-          <NeonInput
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <NeonInput
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <NeonButton type="submit" style={{ marginTop: '1rem' }}>Login</NeonButton>
+          <NeonInput type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
+          <NeonInput type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
+          <NeonButton type="submit" style={{ marginTop: '0.5rem' }}>Login</NeonButton>
+
+          <div style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-dim)', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+            <Link to="/forgot-password" style={{ color: 'var(--neon-magenta)' }}>Forgot Password?</Link>
+            <span>Don't have an account? <Link to="/register" style={{ color: 'var(--neon-cyan)' }}>Register</Link></span>
+          </div>
         </form>
       </NeonCard>
     </div>

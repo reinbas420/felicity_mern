@@ -1,12 +1,14 @@
 import React from 'react';
 
-export const NeonButton = ({ children, onClick, secondary, type = "button", style }) => {
+export const NeonButton = ({ children, onClick, secondary, type = "button", style, disabled, ...rest }) => {
     return (
         <button
             type={type}
             onClick={onClick}
+            disabled={disabled}
             className={`neon-button ${secondary ? 'secondary' : ''}`}
             style={style}
+            {...rest}
         >
             {children}
         </button>
@@ -26,7 +28,7 @@ export const NeonCard = ({ children, title, style, variant = 'default' }) => {
     );
 };
 
-export const NeonInput = ({ type, placeholder, value, onChange, name, required }) => {
+export const NeonInput = ({ type, placeholder, value, onChange, name, required, style, disabled, onFocus, min, max, ...rest }) => {
     return (
         <input
             className="neon-input"
@@ -36,7 +38,12 @@ export const NeonInput = ({ type, placeholder, value, onChange, name, required }
             onChange={onChange}
             name={name}
             required={required}
-            style={{ marginBottom: '1rem' }}
+            disabled={disabled}
+            onFocus={onFocus}
+            min={min}
+            max={max}
+            style={{ marginBottom: '0.6rem', ...style }}
+            {...rest}
         />
     );
 };

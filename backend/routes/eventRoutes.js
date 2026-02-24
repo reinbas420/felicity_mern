@@ -1,29 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const {
-    getMyEvents,
-    getAllEvents,
-    getAdminEvents,
-    createEvent,
-    registerForEvent,
-    updateEvent,
-    deleteEvent,
+    getMyEvents, getAllEvents, getAdminEvents, getEventDetail, getEventRegistrations, markAttendance,
+    createEvent, registerForEvent, updateEventForm,
+    getTrendingEvents, getMyRegisteredEvents, getFollowedEvents, getParticipationHistory,
+    updateEvent, deleteEvent, publishEvent, approveRegistration, rejectRegistration,
 } = require('../controllers/eventController');
 const { protect } = require('../middleware/authMiddleware');
 
-// Browse all events (with filters)
 router.route('/').get(protect, getAllEvents).post(protect, createEvent);
-
-// Organizer's own events
 router.route('/my-events').get(protect, getMyEvents);
-
-// Admin: all events split by upcoming/past
 router.route('/admin/all').get(protect, getAdminEvents);
-
-// Register for an event
+router.route('/trending').get(protect, getTrendingEvents);
+router.route('/my-registered').get(protect, getMyRegisteredEvents);
+router.route('/followed').get(protect, getFollowedEvents);
+router.route('/history').get(protect, getParticipationHistory);
 router.route('/:id/register').post(protect, registerForEvent);
-
-// Update/Delete event
-router.route('/:id').put(protect, updateEvent).delete(protect, deleteEvent);
+router.route('/:id/attendance').post(protect, markAttendance);
+router.route('/:id/form').put(protect, updateEventForm);
+router.route('/:id/registrations').get(protect, getEventRegistrations);
+router.route('/:id/publish').put(protect, publishEvent);
+router.route('/:eventId/registrations/:regId/approve').put(protect, approveRegistration);
+router.route('/:eventId/registrations/:regId/reject').put(protect, rejectRegistration);
+router.route('/:id').get(protect, getEventDetail).put(protect, updateEvent).delete(protect, deleteEvent);
 
 module.exports = router;

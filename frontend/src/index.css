@@ -17,7 +17,7 @@
   --text-light: #1a1a1a;
   --border-light: #ccc;
 
-  /* Defaults */
+  /* Defaults (light) */
   --bg-color: var(--bg-light);
   --text-color: var(--text-light);
   --border-color: var(--border-light);
@@ -40,9 +40,23 @@ body {
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
   min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  font-size: 16px;
 }
 
-/* Typography & Utilities */
+html {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+#root {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+
+/* Typography */
 h1,
 h2,
 h3 {
@@ -50,17 +64,28 @@ h3 {
   letter-spacing: -0.5px;
 }
 
+h1 {
+  font-size: 1.8rem;
+}
+
+h2 {
+  font-size: 1.35rem;
+}
+
+h3 {
+  font-size: 1.15rem;
+}
+
 .neon-text {
-  /* Subtle glow, clean text */
   text-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
 }
 
-/* Cards */
+/* Cards — slightly larger padding */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 20px;
-  padding: 2rem;
+  padding: 1.6rem;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -75,7 +100,7 @@ h3 {
 }
 
 .card:hover {
-  transform: translateY(-5px) scale(1.01);
+  transform: translateY(-4px) scale(1.01);
   box-shadow: 0 20px 40px -10px rgba(0, 243, 255, 0.15);
   border-color: var(--neon-cyan);
 }
@@ -83,14 +108,12 @@ h3 {
 /* Inputs */
 .neon-input {
   background: rgba(255, 255, 255, 0.03);
-  /* Default for dark */
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 1rem 1.2rem;
+  padding: 0.75rem 1rem;
   color: var(--text-color);
-  /* Adapts to theme */
   width: 100%;
-  font-size: 1rem;
+  font-size: 0.95rem;
   transition: all 0.3s ease;
   outline: none;
 }
@@ -101,7 +124,6 @@ h3 {
   box-shadow: 0 0 0 4px rgba(0, 243, 255, 0.1);
 }
 
-/* Light mode override for input background visibility */
 :root:not([data-theme="neon-dark"]) .neon-input {
   background: #ffffff;
   border-color: #ccc;
@@ -114,12 +136,12 @@ h3 {
   background: transparent;
   color: var(--text-color);
   border: 1px solid var(--border-color);
-  padding: 0.8rem 1.5rem;
+  padding: 0.7rem 1.4rem;
   border-radius: 50px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   letter-spacing: 0.5px;
   position: relative;
   overflow: hidden;
@@ -159,7 +181,7 @@ h3 {
   color: #fff;
 }
 
-/* Light mode: headings and neon-text must be visible */
+/* Light mode headings */
 :root:not([data-theme="neon-dark"]) h1,
 :root:not([data-theme="neon-dark"]) h2,
 :root:not([data-theme="neon-dark"]) h3 {
@@ -206,7 +228,6 @@ input[type="checkbox"]::before {
   transform: scale(0);
   transition: 120ms transform ease-in-out;
   box-shadow: inset 1em 1em var(--bg-dark);
-  /* Checkmark color (inverse of bg) */
   transform-origin: center;
   clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
   background-color: #000;

@@ -3,35 +3,17 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   // Common fields
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  role: {
-    type: String,
-    enum: ['participant', 'organizer', 'admin'],
-    default: 'participant',
-  },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  role: { type: String, enum: ['participant', 'organizer', 'admin'], default: 'participant' },
 
   // Participant fields (Section 6.1)
   firstName: { type: String },
   lastName: { type: String },
-  participantType: {
-    type: String,
-    enum: ['iiit', 'external'],
-    default: 'external',
-  },
+  participantType: { type: String, enum: ['iiit', 'external'], default: 'external' },
   collegeName: { type: String },
   contactNumber: { type: String },
-  genres: {
-    type: [String],
-    default: [],
-  },
+  genres: { type: [String], default: [] },
 
   // Organizer fields (Section 6.2)
   organizerName: { type: String },
@@ -39,16 +21,26 @@ const userSchema = new mongoose.Schema({
   description: { type: String },
   contactEmail: { type: String },
 
+  // Social: follow organizers
+  followedOrganizers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+
+  // Password reset OTP
+  resetOtp: { type: String },
+  resetOtpExpiry: { type: Date },
+
+  // Organizer password reset approval
+  pendingPasswordReset: { type: Boolean, default: false },
+  pendingNewPassword: { type: String },
+  passwordResetRequestedAt: { type: Date },
+  passwordResetReason: { type: String, default: '' },
+
   // Legacy compat
   name: { type: String },
   isIIIT: { type: Boolean, default: false },
 });
 
-// Hash password before saving
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
-    next();
-  }
+  if (!this.isModified('password')) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });

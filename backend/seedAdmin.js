@@ -8,8 +8,8 @@ connectDB();
 
 const seedAdmin = async () => {
     try {
-        const adminEmail = 'admin@example.com';
-        const adminPassword = 'adminpassword123'; // Change this in production!
+        const adminEmail = 'admin@felicity.iiit.ac.in';
+        const adminPassword = 'password'; // Change this in production!
 
         // Check if admin exists
         const adminExists = await User.findOne({ email: adminEmail });
