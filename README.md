@@ -3,8 +3,8 @@
 A premium, full-stack event management platform designed for college festivals, featuring a sleek neon aesthetic and advanced role-based functionalities.
 
 ## 🚀 Experience the App
-- **Live Frontend:** [Vercel Deployment URL]
-- **Live Backend:** [Render Deployment URL]
+- **Live Frontend:** [[Vercel Deployment URL](https://felicity-mern.vercel.app)]
+- **Live Backend:** [[Render Deployment URL](https://felicity-mern.onrender.com)]
 
 ---
 
